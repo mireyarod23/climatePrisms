@@ -73,9 +73,10 @@ function getProperties(nodes)
 				texture:					n.texture,
 				name: 						n.caption,
 				width: 						n.width,
-				height:						n.height
-                
-		};
+				height:						n.height,
+                Story:                      n.Story,
+                content_type:               n.content_type
+        };
 				
 		// Eliminate duplicates
 
@@ -139,6 +140,9 @@ function createHTML(state)
 								'cadetblue', 'chocolate', 'coral', 'darkkhaki', 
 								'darksalmon', 'darkturquoise', 'fuchia', 'goldenrod', 
 								'lightpink', 'lavender'];
+
+
+    current_story_count = current_story_count + 1;
 
 	html = '';
 
@@ -225,6 +229,8 @@ function createHTML(state)
 }
 
 
+current_story_count = 0
+
 function embedAction(image)
 {
 	var choice, hdr, value, typ, context_level, context_var;
@@ -254,6 +260,9 @@ function embedAction(image)
   if (hdr == "####")
     return 'onclick=state.animator.run("' + choice + '")';
 
+    if (hdr == "^^^^")
+        current_story_count = 0;
+        
 //    if(hdr == "&&&&")
 //        return 'onclick=state.fullLayout.run("' + choice + '")';
    
@@ -261,9 +270,15 @@ function embedAction(image)
 	else if (hdr == "$$$$") typ = "level",   value = choice;
 	else if (hdr == "&&&&") typ = "layout",   value = choice;
 	else                    typ = "rules",   value = image.image,   context_story = image.level,   context_var = image.context;
-    
+      
+    return 'onclick="loadUserInfo(event, this.innerHTML, ' + "'" + choice +  
+                                                             "', '" + typ + "', '" + value + 
+                                                            // "', '" + context_story + "', '" + context_var +   
+                                                            //"', '" + image.Story + "', '" + (3 - current_story_count) + "')" + '"';
+                                                             "', '" + image.Story + "', '" +  current_story_count + "')" + '"';
 
-    return 'onclick="loadUserInfo(event, this.innerHTML, ' + "'" + choice + "', '" + typ + "', '" + value + "', '" + context_story + "', '" + context_var + "')" + '"';
+                                                       
+    
     //return 'onclick="loadUserInfo(event, this.innerHTML, ' + "'" + choice + "', '" + typ + "', '" + value + "', '" + context_story + "')" + '"';
 
 }

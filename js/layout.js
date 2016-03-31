@@ -24,8 +24,8 @@ var Layout = function()
 
 Layout.prototype.random = function()
 {
-	return 0.25;
-	// return Math.random();
+//	return 0.25;
+	 return Math.random();
 }
 
 // Remove a specific member from an array
@@ -87,7 +87,7 @@ Layout.prototype.can_stretch = function(ix, iy, rx, ry)
 Layout.prototype.subdiv_test = function(i, r, image, rect)
 {
 	return i == 0;
-
+/*
 	// Don't, if we have passed some level limit
 
 	if (i >= this.max_subdiv_level)
@@ -119,6 +119,7 @@ Layout.prototype.subdiv_test = function(i, r, image, rect)
 
 	var p = this.random() < this.prop_subdivide;
 	return p;
+*/
 }
 
 Layout.prototype.createTiles = function(content)

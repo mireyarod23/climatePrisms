@@ -80,7 +80,7 @@ var kk = 99999999;
 		if (action == "level")
 			query_url = "http://127.0.0.1:1337/get_content?field=level" + userinfo + "&value=" + argument;
 		else if (action == "rules")
-			query_url = "http://127.0.0.1:1337/get_content?field=rules" + userinfo + "&value=" + argument;
+			query_url = "http://127.0.0.1:1337/get_content?field=rules" + userinfo + "&value=" + argument + "," + story + "," + context;
 		else if (action == "tags")
 			query_url = "http://127.0.0.1:1337/get_content?field=tags" + userinfo + "&value=" + argument;
         else if (action == "story_context")

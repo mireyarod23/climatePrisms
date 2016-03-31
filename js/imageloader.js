@@ -29,6 +29,7 @@ function __imageLoader()
 
 	this.item_error = function(me) 
 	{
+        alert("item_error error");
 		this.count = this.count - 1;
 		if (this.count == 0)
 			this.after(this.indices, this.data);

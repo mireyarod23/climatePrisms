@@ -1,3 +1,5 @@
+
+
 var express = require('express');
 var app     = express();
 
@@ -47,8 +49,7 @@ MongoClient.connect(format("mongodb://%s:%s/bradbury?w=1", host, port), function
 	fillers = db.collection('fillers');
 	userinfo_collection = db.collection('userinfo');
     layoutCollection = db.collection('fullLayout');
-    
-    
+
 });
 
 function return_json(r, j)
@@ -73,120 +74,26 @@ app.get('/get_content', function(req, res, callback) {
 
 	userinfo_collection.insert(req.query, function(err, docs) {});
     
-	nodes = [];
-  
-//  
-//    if(req.query.field=='layout')
-//	{
-//        var val = req.query.value;
-//        var layout_filename = "";
-//        var layout_name = "";
-//        var layout_sequence = "";
-//        var layout = [];
-//        var indx;
-//        var regex;
-//         
-//                var seq = ", " + val + ",|^" + val + ",|^" + val + "$|, " + val + "$";
-//                var expression = {'name': new RegExp(val)};
-//                  layoutCollection.find(expression, function(err, cursor)
-//                {
-//                        cursor.toArray(function(e, results) 
-//                        { 
-//                            for(k = 0; k < results.length; k++)
-//                            {
-//                                index = Math.floor(Math.random() * results.length); 
-//                                layout.push(results[index]);
-//                                
-//                            }
-//       
-//                            
-//                layout_filename = "" + layout.filename;
-//                layout_name = "" + layout.name;
-//                layout_sequence = "" + layout.sequence;
-//                            
-//                console.log(layout);
-//                console.log(layout_name);
-//                console.log(layout_sequence);            
-//                         
-//                var value = ", " + layout_name + ",|^" +  layout_name  + ",|^" +  layout_name  + "$|, " +  layout_name  + "$";
-//                
-//                console.log(layout_filename);
-//                var expression = {'filename': new RegExp(value)};
-//		collection.find(expression, function(err, cursor)
-//		{
-//				cursor.toArray(function(e, results) 
-//				{ 
-//					   for(k = 0; k < results.length; k++)
-//					{
-//						index = Math.floor(Math.random() * results.length);
-//						nodes.push(results[index]);
-//						results.splice(index, 1); //remove that one from consideration
-//					}
-//					return_json(res, nodes);
-//				})
-//		});
-//    
-//            });
-//    });
-//        
-//}
-                                        
+	nodes = [];                          
                                         
     if(req.query.field=='layout')
 	{
         var val = req.query.value;
-        var layout_filename = "";
-        var layout_name = "";
-        var layout_sequence = "";
-        var layout = [];
-        var indx;
-        var regex;
-        
-    layoutCollection.find({'name': new RegExp(val)}).each(function(err, node) {
-        if(node != null) {
-            layout_filename = "" + node.filename;
-            layout_name = "" + node.name;
-            layout_sequence = "" + node.sequence;
-            
-            for(i = 0; i < layout_filename.count; i++) {
-                layout.push(layout_filename);
-                console.log(layout);
-            }
-        
-        async.parallel([
-            function(callback){
-                 var choices = layout.split(",");
-                        for(j=0; j<choices.length; j++) {       
-                                choices[j] = choices[j].trim();
-                               
-                            }
-                var indx = Math.floor(Math.random()*choices.length); //randomly select a level 
-                 var value = ", " + layout_filename + ",|^" +  layout_filename  + ",|^" +  layout_filename + "$|, " + layout_filename + "$";
-                    var expression = {'filename': new RegExp(regex)}; // in the LEVEL column in 
-                        collection.find(expression, function(err, cursor)
-													{
-														cursor.toArray(function(e, results) 
-														{ 
-																nodes.push(results); //push the result where it obtains all of the image node                                                
-//												                console.log(results);
-												
-														})
-												    });
-            
-            },
-            
-        ], function(err, results) { return_json(res, nodes); });
-         
-                                                                
+  
+        result_array =[]
+        collection.findOne({'filename': val}, function(err, item)
+        {
+            console.log(item)
+            return_json(res, [item]);
+        });
     }
-    });
-}
-    
-                                                         
     else if(req.query.field=='rules')
 	{
             
-		var rule = req.query.value;
+		var rule = req.query.value.split(',')[0];
+        var story_iteration = req.query.value.split(',')[1];
+        var iteration = req.query.value.split(',')[2];
+        console.log("RULE " + req.query.value + "    " + rule)
 		var found_rule = false;
 		var story_type = "";
 		var content_type = "";
@@ -196,7 +103,32 @@ app.get('/get_content', function(req, res, callback) {
 		var dice_roll = Math.floor(Math.random()*2+1);
 		var dice_roll2 = Math.floor(Math.random()*2+1);
         
-
+        if (iteration < 3)
+        {
+            console.log("Iteration" + story_iteration);
+            console.log("ITERATION rules " + iteration);
+            
+            nodes = []
+            var find_story_content = function(s, callback)
+            {
+                var expression = {'$and': [{'include': 'x'}, {'Story': s}, {'layout': 0}]};
+                var cursor = collection.find(expression);
+                cursor.each(function(err, item) {
+                    if (item != null) {
+                        nodes.push(item);  
+                    }
+                    else
+                    {
+                        nodes = nodes.sort(function() { return 0.5 - Math.random(); }).slice(0, 6);
+                        callback();
+                    }});                      
+            }
+            
+            find_story_content(story_iteration, function() { console.log("ITERATION " + iteration + " returns " + nodes.length + " items"); return_json(res, nodes); });
+        }
+        else
+        {
+            console.log("NON_ITERATION rules");
 		  collection.find({'filename': new RegExp(rule)}).each(function(err, node) {
         
 			if(node != null) {
@@ -350,6 +282,7 @@ app.get('/get_content', function(req, res, callback) {
 				], function(err, results) { return_json(res, nodes); });
 			}                                                 
 		  });
+	}
     }
     else if (req.query.field=='story_context')
     {
