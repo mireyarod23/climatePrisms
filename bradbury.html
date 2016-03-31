@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Bradbury Museum Interface</title>
+<style>
+
+	input, .label, select {
+		font-size:16px;font-family:Verdana, Arial, sans-serif;
+		padding: 2px;
+	}
+
+	#ping-container, #pong-container {
+		background-size: cover;
+		background-repeat: no-repeat;
+	}
+	body {
+	}
+
+</style>
+<script src="js/jquery.min.js"></script>
+<script src="js/createView.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/imageloader.js"></script>
+<script src="js/Animator.js"></script>
+<script src="js/FullLayout.js"></script>
+
+<script>
+
+	var Bradbury = function()
+	{
+		this.animator = new Animator();
+        this.fullLayout = new FullLayout();
+		this.layout   = new Layout;
+		$.ajax({dataType: 'json', url: 'http://127.0.0.1:1337/get_fillers', context: this, success: function(data) { this.fillers = data; this.Start(); }})
+	}
+
+	Bradbury.prototype.Start = function()
+	{
+		var load = window.location.search.substr(1).split('=');
+		  loadContent("&image=startup&x=0&y=0&time=" + new Date().getTime(), load[0], load[1]);
+	}
+
+	function loadUserInfo(event, img, content, action, argument, story, context) 
+	{
+       
+        //user input is store, then send to the load content 
+		var userinfo = "&image=" + event.clientX + "&y=" + event.clientY + "&time=" + new Date().getTime() + "&image=" + img;
+
+		loadContent(userinfo, action, argument, story, context);
+	}
+
+var content_count = 0;
+var kk = 99999999;
+
+	function loadContent(userinfo, action, argument, story, context)
+	{
+//        var patt = new RegExp(/[0-9][0-9](8)/g);
+//        var context_story = patt.test(story);
+//        
+//        var cont = new RegExp(/y/i);
+//        var context_variable = cont.test(context);
+//        
+        // if context_story and context_variable both are true then story_context is then used
+        // this allows for content that is in the 8th story and has a Y for context then it uses 
+        // the saved levels to query for content in express_server_save
+        
+//        if(context_story && context_variable) 
+//            
+//            action = "story_context";
+
+		if (content_count > kk)
+
+		content_count = content_count + 1;
+
+		if (action == "image")
+			post_layout('<img src="images/' + argument + '" />');  
+        
+		var query_url;
+		if (action == "level")
+			query_url = "http://127.0.0.1:1337/get_content?field=level" + userinfo + "&value=" + argument;
+		else if (action == "rules")
+			query_url = "http://127.0.0.1:1337/get_content?field=rules" + userinfo + "&value=" + argument;
+		else if (action == "tags")
+			query_url = "http://127.0.0.1:1337/get_content?field=tags" + userinfo + "&value=" + argument;
+        else if (action == "story_context")
+            query_url = "http://127.0.0.1:1337/get_content?field=story_context" + userinfo + "&value=" + argument;
+        else if (action == "layout")
+             query_url = "http://127.0.0.1:1337/get_content?field=layout" + userinfo + "&value=" + argument;
+		else
+			var query_url = "http://127.0.0.1:1337/get_content?field=level" + userinfo + "&value=0" ;
+
+		$.ajax({
+			dataType: 'json',
+			url: query_url,
+			data: {},
+			success: function(data) { 
+                createView(state, data);
+			}
+		});
+	}
+
+function toggle_form() {
+	if(get('node_form').style.visibility == 'hidden') {
+		get('node_form').style.visibility = 'visible';
+	} else {
+		get('node_form').style.visibility = 'hidden';
+	}
+}
+
+
+function showtext(id, caption, provenance)
+{
+	$(id).html('Hello')
+	$(id).css('visibility', 'visible');
+}
+
+function hidetext()
+{
+	$(id).css('visibility', 'hidden');
+}
+
+</script>
+<body style="margin:0;overflow:hidden">
+<script>
+
+var container;
+var front_buffer, back_buffer;
+
+function finish_frame()
+{
+	$(back_buffer).css('visibility', 'visible');
+	$(front_buffer).css('visibility', 'hidden');
+	$('#temp').html("");
+	
+	var t = front_buffer;
+	front_buffer = back_buffer;
+	back_buffer = t;
+
+	if (content_count > kk)
+	{
+		var h = $(front_buffer.children[0]).html();
+		var h0 = h.slice(h.indexOf('loadUserInfo'));
+		var h1 = h0.slice(0, h0.indexOf(')'));
+		aaa = h1.split(',')[3].trim()
+		aaa = aaa.slice(1,aaa.length-1)
+		bbb = h1.split(',')[4].trim()
+		bbb = bbb.slice(1,bbb.length-1)
+		setTimeout(function(){ loadContent('&nothing', aaa, bbb); }, 1000);
+	}
+}
+
+function post_layout(html)
+{
+	$(front_buffer).find(".info_popup").css("visibility", "hidden");
+	$(back_buffer).html(html);
+
+	setTimeout(function() { finish_frame(); }, 1000);
+}
+
+function swap_buffers()
+{
+	$(back_buffer).css('visibility', 'visible');
+	$(front_buffer).css('visibility', 'hidden');
+	
+	var t = front_buffer;
+	front_buffer = back_buffer;
+	back_buffer = t;
+
+}
+
+// Settle the page, then get content
+$(document).ready(function() {
+
+	state = new Bradbury();
+
+	front_buffer = document.getElementById('ping-container');
+	back_buffer = document.getElementById('pong-container');
+
+});
+
+</script>
+<div id="container" style="background-color:darkgrey;z-index:0;width:100vw;height:100vh">
+	<button onclick="swap_buffers()" style="position:absolute;top:0px;left:0px;z-index:1;color:blue;background-color:#ffffee">Back</button>
+	<div id="ping-container" style="height:100%;width:100%;visibility:visible"></div>
+	<div id="pong-container" style="height:100%;width:100%;visibility:hidden"></div>
+</div>
+<div id="overlay" style="visibility:hidden">
+	<div id="video-contents" style="position:absolute;top:0px;left:0px;background-color:black;z-index:2;width:100vw;height:100vh;visibility:inherit"></div>
+	<div id="video-controls" style="position:absolute;top:0px;left:0px;z-index:3;width:100vw;height:100vh;visibility:hidden">
+		<div id="video-controls-up" style="position:absolute;top:0px;right:0%;width:40%;height:10%;background-color:transparent;z-index:4" onclick=state.animator.hide();></div>
+		<div id="video-controls-last" style="position:absolute;top:35%;left:0px;height:30%;width:10%;background-color:transparent;z-index:4" onclick=state.animator.last();></div>
+		<div id="video-controls-next" style="position:absolute;top:35%;left:90%;height:30%;width:10%;background-color:transparent;z-index:4" onclick=state.animator.next();></div>
+		<div id="video-controls-rerun" style="position:absolute;top:35%;left:35%;height:30%;width:30%;background-color:transparent;z-index:4" onclick=state.animator.rerun();></div>
+	</div>
+</div>
+<div id="temp" style="z-index:-1"></div>
+</body>
+</html>
