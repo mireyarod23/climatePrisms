@@ -1,5 +1,3 @@
-
-
 var express = require('express');
 var app     = express();
 
@@ -38,7 +36,10 @@ var backgrounds = '';
 var layoutCollection = '';
 var random_index = 0;
 var userinfo_collection = '';
-var keywords = '';
+var user_id = -1;
+var last_user_action_time = -1;
+var userinfo_collection = '';
+
 MongoClient.connect(format("mongodb://%s:%s/bradbury?w=1", host, port), function(err, db) {
 	if(!err) {
 		console.log("We are connected");
@@ -71,7 +72,14 @@ app.get('/get_fillers', function(req, res, callback) {
 
 app.get('/get_content', function(req, res, callback) {
 	console.log('get_content: ' + req.query.field + ' ' + req.query.value);
-
+	console.log('saved level' + ' ' + levelForContext);
+	
+    if(req.query.time - last_user_action_time > (1000*60*3)) { //3 minutes (1000 miliseconds * 60 seconds * 3 minutes
+		user_id++;
+	}
+    
+	last_user_action_time = req.query.time;
+	req.query.userid = user_id;
 	userinfo_collection.insert(req.query, function(err, docs) {});
     
 	nodes = [];                          

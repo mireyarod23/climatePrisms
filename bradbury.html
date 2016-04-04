@@ -23,14 +23,12 @@
 <script src="js/layout.js"></script>
 <script src="js/imageloader.js"></script>
 <script src="js/Animator.js"></script>
-<script src="js/FullLayout.js"></script>
 
 <script>
 
 	var Bradbury = function()
 	{
 		this.animator = new Animator();
-        this.fullLayout = new FullLayout();
 		this.layout   = new Layout;
 		$.ajax({dataType: 'json', url: 'http://127.0.0.1:1337/get_fillers', context: this, success: function(data) { this.fillers = data; this.Start(); }})
 	}
@@ -41,13 +39,11 @@
 		  loadContent("&image=startup&x=0&y=0&time=" + new Date().getTime(), load[0], load[1]);
 	}
 
-	function loadUserInfo(event, img, content, action, argument, story, context) 
+	function loadUserInfo(event, img, content, action, argument) 
 	{
-       
         //user input is store, then send to the load content 
-		var userinfo = "&image=" + event.clientX + "&y=" + event.clientY + "&time=" + new Date().getTime() + "&image=" + img;
-
-		loadContent(userinfo, action, argument, story, context);
+		var userinfo = "&x=" + event.clientX + "&y=" + event.clientY + "&time=" + new Date().getTime() + "&image=" + img;
+		loadContent(userinfo, action, argument);
 	}
 
 var content_count = 0;
@@ -55,20 +51,6 @@ var kk = 99999999;
 
 	function loadContent(userinfo, action, argument, story, context)
 	{
-//        var patt = new RegExp(/[0-9][0-9](8)/g);
-//        var context_story = patt.test(story);
-//        
-//        var cont = new RegExp(/y/i);
-//        var context_variable = cont.test(context);
-//        
-        // if context_story and context_variable both are true then story_context is then used
-        // this allows for content that is in the 8th story and has a Y for context then it uses 
-        // the saved levels to query for content in express_server_save
-        
-//        if(context_story && context_variable) 
-//            
-//            action = "story_context";
-
 		if (content_count > kk)
 
 		content_count = content_count + 1;
@@ -83,8 +65,6 @@ var kk = 99999999;
 			query_url = "http://127.0.0.1:1337/get_content?field=rules" + userinfo + "&value=" + argument + "," + story + "," + context;
 		else if (action == "tags")
 			query_url = "http://127.0.0.1:1337/get_content?field=tags" + userinfo + "&value=" + argument;
-        else if (action == "story_context")
-            query_url = "http://127.0.0.1:1337/get_content?field=story_context" + userinfo + "&value=" + argument;
         else if (action == "layout")
              query_url = "http://127.0.0.1:1337/get_content?field=layout" + userinfo + "&value=" + argument;
 		else
