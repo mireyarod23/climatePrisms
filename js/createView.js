@@ -1,7 +1,8 @@
 // CreateView.js August 10
 //
 
-var keywords = ["thermokarst", "hydrology", "geomorphology", "polygons", "retrogressive thaw slump", "albedo", "rivers", "terrestrial", "lakes", "permafrost"];
+var current_story_count = 0;
+
 
 function random()
 {
@@ -13,6 +14,7 @@ function createView(state, contents)
 {
 
 	state.properties = getProperties(contents); //fill the properties data structure
+
 
 	state.candidate_images  = [];
 	for (var i = 0; i < state.properties.length && i < 6; i++)
@@ -75,7 +77,33 @@ function getProperties(nodes)
 				width: 						n.width,
 				height:						n.height,
                 Story:                      n.Story,
-                content_type:               n.content_type
+                content_type:               n.content_type,
+                keyword:                    n.keyword
+        };
+				
+		// Eliminate duplicates
+
+		for (var j = 0; j < properties.length; j++)
+			if (p.image == properties[j].image)
+				break;
+
+		if (j == properties.length)
+			properties.push(p);
+	}
+
+	return properties;
+}
+
+function getKeywordProperties()
+{
+	keywordProperties = new Array();
+
+	for (var i = 0; i < nodes.length; i++)
+	{
+		var n = nodes[i];
+		var p = {
+				image: 						n.filename,
+                keyword:                    n.keyword
         };
 				
 		// Eliminate duplicates
@@ -166,7 +194,8 @@ function createHTML(state)
 		if (image.empty)
 		{
 			var b = state.fillers[Math.floor(random()*0.99*state.fillers.length)];
-
+         
+    
 			var w = rw / b.width;
 			var h = rh / b.height;
 
@@ -197,13 +226,32 @@ function createHTML(state)
             // matching key words adding href link for destination. 
             // if could add multiple database to access then create database that has all the possible key words with its corresponding level. 
             // corrisponding level will the execute inside bradbury html with proper link, which then access the express_server
-            
-            keywords.forEach(function(inf) {
-                info = info.split(RegExp("\\b" + inf + "\\b", "i")). join("<a href=#>" +inf + "</a>"); 
-               });
-            
-            
-            
+                       
+//            keywords.forEach(function(inf) {
+//                info = info.split(RegExp("\\b" + inf + "\\b", "i")). join("<a href=#>" +inf + "</a>"); 
+//               });
+//            var words  = [];
+//            var k = state.keywords;
+//
+//            for (var i= 0; i < k.length; i++) 
+//            {
+//                var key = k[i];
+//                words.push(key.keyword);
+//               
+//            
+//            var userInput = "&image=" + "&time=" + new Date().getTime() + "&image=" + k[i];
+////                text = text.replace(new RegExp(i, gi), function(word) {
+//           //     info = info.split(RegExp("\\b" + k[i] + "\\b", "i")). join("<a href=http://127.0.0.1:1337/get_content?field=layout" + userInput + "&value=" + k[i] + ">" + k[i] + "</a>"); 
+////               });
+//            
+//           // }
+//           
+//                words.forEach(function(inf) {
+//                console.log(key.filename);
+//                info = info.split(RegExp("\\b" + inf + "\\b", "i")). join("<a href=# onclick=return  >" + inf + "</a>"); 
+//               });
+//            }
+        
 			if (info != "")
 			{
                 info;
@@ -229,7 +277,7 @@ function createHTML(state)
 }
 
 
-current_story_count = 0
+
 
 function embedAction(image)
 {
@@ -263,18 +311,15 @@ function embedAction(image)
     if (hdr == "^^^^")
         current_story_count = 0;
         
-//    if(hdr == "&&&&")
-//        return 'onclick=state.fullLayout.run("' + choice + '")';
    
 	if		(hdr == "%%%%") typ = "tags" ,   value = choice;
 	else if (hdr == "$$$$") typ = "level",   value = choice;
 	else if (hdr == "&&&&") typ = "layout",   value = choice;
 	else                    typ = "rules",   value = image.image,   context_story = image.level,   context_var = image.context;
       
+    
     return 'onclick="loadUserInfo(event, this.innerHTML, ' + "'" + choice +  
                                                              "', '" + typ + "', '" + value + 
-                                                            // "', '" + context_story + "', '" + context_var +   
-                                                            //"', '" + image.Story + "', '" + (3 - current_story_count) + "')" + '"';
                                                              "', '" + image.Story + "', '" +  current_story_count + "')" + '"';
 
                                                        

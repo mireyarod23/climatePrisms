@@ -29,8 +29,10 @@
 	var Bradbury = function()
 	{
 		this.animator = new Animator();
-		this.layout   = new Layout;
+        this.layout   = new Layout;
+        $.ajax({dataType: 'json', url: 'http://127.0.0.1:1337/get_keywords', context: this, success: function(data) { this.keywords = data; }})
 		$.ajax({dataType: 'json', url: 'http://127.0.0.1:1337/get_fillers', context: this, success: function(data) { this.fillers = data; this.Start(); }})
+  
 	}
 
 	Bradbury.prototype.Start = function()
@@ -39,17 +41,17 @@
 		  loadContent("&image=startup&x=0&y=0&time=" + new Date().getTime(), load[0], load[1]);
 	}
 
-	function loadUserInfo(event, img, content, action, argument) 
+	function loadUserInfo(event, img, content, action, argument, story, story_count) 
 	{
         //user input is store, then send to the load content 
 		var userinfo = "&x=" + event.clientX + "&y=" + event.clientY + "&time=" + new Date().getTime() + "&image=" + img;
-		loadContent(userinfo, action, argument);
+		loadContent(userinfo, action, argument, story, story_count);
 	}
 
 var content_count = 0;
 var kk = 99999999;
 
-	function loadContent(userinfo, action, argument, story, context)
+	function loadContent(userinfo, action, argument, story, story_count)
 	{
 		if (content_count > kk)
 
@@ -62,7 +64,7 @@ var kk = 99999999;
 		if (action == "level")
 			query_url = "http://127.0.0.1:1337/get_content?field=level" + userinfo + "&value=" + argument;
 		else if (action == "rules")
-			query_url = "http://127.0.0.1:1337/get_content?field=rules" + userinfo + "&value=" + argument + "," + story + "," + context;
+			query_url = "http://127.0.0.1:1337/get_content?field=rules" + userinfo + "&value=" + argument + "," + story + "," + story_count;
 		else if (action == "tags")
 			query_url = "http://127.0.0.1:1337/get_content?field=tags" + userinfo + "&value=" + argument;
         else if (action == "layout")
