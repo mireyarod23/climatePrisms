@@ -13,7 +13,7 @@ Animator.prototype.hide = function()
 
 Animator.prototype.set_animation_html = function()
 {
-	$('#video-contents').html('<video autoplay onended=state.animator.what_next() width="100%" height="100%" controls><source src="images/DATABASE/' + this.animation_frames[this.current_animation_frame] + '" type="video/mp4" ></video>')
+	$('#video-contents').html('<video autoplay onended=state.animator.what_next() width="100%" height="100%" controls><source src="images/DATABASE/Video/' + this.animation_frames[this.current_animation_frame] + '" type="video/mp4" ></video>')
 }
 
 Animator.prototype.what_next = function()

@@ -164,10 +164,7 @@ function createHTML(state)
 
 	// Colors for "images" without content - e.g. empty rects
 
-	var colors = ['red', 'green', 'blue', 'cyan', 'yellow', 'magenta',
-								'cadetblue', 'chocolate', 'coral', 'darkkhaki', 
-								'darksalmon', 'darkturquoise', 'fuchia', 'goldenrod', 
-								'lightpink', 'lavender'];
+	var colors = ['grey'];
 
 
     current_story_count = current_story_count + 1;
@@ -214,11 +211,12 @@ function createHTML(state)
 		{
 			var info = ""
 			if (image.name.length == 0 && image.meta.length > 0)
-				info = image.meta
+				info = image.name
 			else if (image.name.length > 0 && image.meta.length == 0)
 				info = image.name
 			else if (image.name.length > 0 && image.meta.length > 0)
-				info = image.meta + ', ' + image.name
+				info = image.name
+				//info = image.meta + ', ' + image.name
 			
       html += '<div id=' + divid + ' style="position:absolute;left:' + x + 'px;top:' + y + 'px;width:' + rw + 'px;height:' + rh + 'px)">';
       html += 	'<img id=' + imgid + ' style="width:' + rw + 'px;height:' + rh + 'px" src="images/' + image.folder + "/" + image.image + '", ' + embedAction(image) + ' />';
@@ -259,10 +257,13 @@ function createHTML(state)
 				html += 		'<div style="position:absolute;top:0%;left:0px;width:100%;height:100%;background-color:black;opacity:0.5;z-index:1001"></div>';
 				html += 		'<div style="position:absolute;border:10px solid grey;margin:10px;bottom:0px;right:20px;background-color:#F5EED7;opacity:0.8;z-index:1002;padding:14px">';
 				html +=        '<p>' + info + '</p>';
-				html +=        '<button style="visibility:inherit" onclick=' + "'popdown_info($(this))';>Close</button>";
+//				html +=       '<button style="visibility:inherit" onclick=' + "'popdown_info($(this))';>Close</button>";
+                html += 		'<div id=close style="visibility:inherit;position:absolute;margin:10px;bottom:0px;right:40px;width:100%;height:100%"background-color:#F5EED7;opacity:0.1;z-index:1002;padding:14px" onclick=' + "'popdown_info($(this))';" +'>';
+                html += 	'</div>'
 				html += 		'</div>'
 				html += 	'</div>'
-				html +=    '<img style="position:absolute;left:' + (rw-50) + 'px;top:' + (rh-50) + 'px;width:50px;height:50px" onclick=' + "'popup_info($(this), " + infid + ")'" + ' src="images/icons/icon.png">';
+				html +=    '<img style="position:absolute;left:' + (rw-50) + 'px;top:' + (rh-50) + 'px;width:50px;height:50px" onmouseover=' + "'popup_info($(this), " + infid + ")'" + ' src="images/icons/icon.png">';
+
 			}
             
            
@@ -281,11 +282,11 @@ function createHTML(state)
 
 function embedAction(image)
 {
-	var choice, hdr, value, typ, context_level, context_var;
+	var choice, hdr, value, typ, context_level, context_var, start_bool;
 
 	content = image.content;
     context_story = image.level;
-    
+    start_bool = "false";  
 
 	if (content.length > 0)
 	{
@@ -320,10 +321,9 @@ function embedAction(image)
     
     return 'onclick="loadUserInfo(event, this.innerHTML, ' + "'" + choice +  
                                                              "', '" + typ + "', '" + value + 
-                                                             "', '" + image.Story + "', '" +  current_story_count + "')" + '"';
+                                                             "', '" + image.Story + "', '" +  current_story_count + "','" +  start_bool + "')" + '"';
 
                                                        
-    
-    //return 'onclick="loadUserInfo(event, this.innerHTML, ' + "'" + choice + "', '" + typ + "', '" + value + "', '" + context_story + "')" + '"';
+
 
 }

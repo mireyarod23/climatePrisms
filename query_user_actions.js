@@ -21,7 +21,7 @@ MongoClient.connect(format("mongodb://%s:%s/bradbury?w=1", host, port), function
 	var nodes = {};
 	collection.find( { "userid": { $gt: -1 } } ).each(function(err, node) {
 		if(node != null) {
-			console.log("[" + node.x + "]:[" + node.y + "]:[" + node.time + "]:[" + node.value + "]");
+			console.log("[" + node.x + "]:[" + node.y + "]:[" + node.time + "]:[" + node.value + "]:[" + node.userid + "]");
 		}
 	});
 	console.log("============================================================");

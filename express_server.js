@@ -2,7 +2,7 @@ var express = require('express');
 var app     = express();
 
 // var root_directory = "/Users/mireyarodriguez/bradbury08_10";
-var root_directory = "/bradbury04_04/climatePrisms";
+var root_directory = "/Bradbury04_04/climatePrisms";
 
 var MongoClient = require('mongodb').MongoClient, 
     format = require('util').format,
@@ -65,26 +65,26 @@ function return_json(r, j)
 
 
 app.get('/get_fillers', function(req, res, callback) {
-		console.log('get_fillers');
+//		console.log('get_fillers');
 		fillers.find({}).toArray(function(err, r) { return_json(res, r); });
 });
 
 app.get('/get_keywords', function(req, res, callback) {
-		console.log('get_keywords');
+//		console.log('get_keywords');
 		keywordCollection.find({}).toArray(function(err, r) { return_json(res, r); });
 });
 
 
 app.get('/get_content', function(req, res, callback) {
-	console.log('get_content: ' + req.query.field + ' ' + req.query.value);
-	console.log('saved level' + ' ' + levelForContext);
+//	console.log('get_content: ' + req.query.field + ' ' + req.query.value);
+//	console.log('saved level' + ' ' + levelForContext);
 	
-    if(req.query.time - last_user_action_time > (1000*60*3)) { //3 minutes (1000 miliseconds * 60 seconds * 3 minutes
-		user_id++;
-	}
-    
-	last_user_action_time = req.query.time;
-	req.query.userid = user_id;
+//    if(req.query.time - last_user_action_time > (6000)) { //3 minutes (1000 miliseconds * 60 seconds * 3 minutes mil
+//		user_id++;
+//	}
+//    
+//	last_user_action_time = req.query.time;
+//	req.query.userid = user_id;
 	userinfo_collection.insert(req.query, function(err, docs) {});
     
 	nodes = [];                          
@@ -96,7 +96,7 @@ app.get('/get_content', function(req, res, callback) {
         result_array =[]
         collection.findOne({'filename': val}, function(err, item)
         {
-            console.log(item)
+//            console.log(item)
             return_json(res, [item]);
         });
     }
@@ -123,22 +123,63 @@ app.get('/get_content', function(req, res, callback) {
             console.log("ITERATION rules " + iteration);
             
             nodes = []
-            var find_story_content = function(s, callback)
-            {
-                var expression = {'$and': [{'include': 'x'}, {'Story': s}, {'layout': 0}]};
-                var cursor = collection.find(expression);
-                cursor.each(function(err, item) {
-                    if (item != null) {
-                        nodes.push(item);  
-                    }
-                    else
-                    {
-                        nodes = nodes.sort(function() { return 0.5 - Math.random(); }).slice(0, 6);
-                        callback();
-                    }});                      
-            }
             
-            find_story_content(story_iteration, function() { console.log("ITERATION " + iteration + " returns " + nodes.length + " items"); return_json(res, nodes); });
+           
+//            var find_story_content = function(s, callback)
+//            {
+//                var expression = {'$and': [{'include': 'x'},{'Story': s},{'layout': 0}]};
+//                var cursor = collection.find(expression);
+//                cursor.each(function(err, item) {
+//                    if (item != null) {
+//                        nodes.push(item);  
+//                    }
+//                    else
+//                    {
+//                        nodes = nodes.sort(function() { return 0.5 - Math.random(); }).slice(0, 6);
+//                        callback();
+//                    }});                      
+//            }
+//            
+//            find_story_content(story_iteration, function() {return_json(res, nodes); });
+             async.parallel([
+              function(callback) {
+				  
+
+                         var expression = {'$and': [{'include': 'x'}, {'Story': story_iteration},{'text': 0},{'layout': 0}]};
+						collection.find(expression, function(err, cursor)
+													{
+														cursor.toArray(function(e, results) 
+														{ 
+															for(k = 0; k < 3 && k < results.length; k++)
+															{
+																index = Math.floor(Math.random() * results.length);
+																nodes.push(results[index]);
+																results.splice(index, 1); //remove that one from consideration
+															}
+															callback();
+														})
+													});
+					},
+                     function(callback) {
+				    //select content from same story column 
+
+                        var expression = {'$and': [{'include': 'x'}, {'Story': story_iteration},{'text': 1}, {'layout': 0}]};
+						collection.find(expression, function(err, cursor)
+													{
+														cursor.toArray(function(e, results) 
+														{ 
+															for(k = 0; k < 2 && k < results.length; k++)
+															{
+																index = Math.floor(Math.random() * results.length);
+																nodes.push(results[index]);
+																results.splice(index, 1); //remove that one from consideration
+															}
+															callback();
+														})
+													});
+					},
+                 ], function(err, results) { return_json(res, nodes); });
+                 
         }
         else
         {
@@ -155,7 +196,8 @@ app.get('/get_content', function(req, res, callback) {
                 
     
                 var nodes = [];
-                 
+            
+                
                 async.parallel([
                
                 function(callback) {
@@ -186,7 +228,7 @@ app.get('/get_content', function(req, res, callback) {
                         }
                     
                         
-                        console.log("Level choosen from image" + " " + value[0] + " , " + value[1]);
+//                        console.log("Level choosen from image" + " " + value[0] + " , " + value[1]);
                         
                         //regualar expression of "or" to match the stories that might 
                         //not have content this matches the next interations
@@ -203,13 +245,13 @@ app.get('/get_content', function(req, res, callback) {
                         //Storing the level being selected
                         levelForContext = levelOne + "," + levelTwo;
  
-                        var expression = {'$and': [{'include': 'x'}, {'level': new RegExp(regex)}]}; // in the LEVEL column in spreadsheet match the regular expression variable called regex
+                        var expression = {'$and': [{'include': 'x'},{'level': new RegExp(regex)},{'text': 0},]}; // in the LEVEL column in spreadsheet match the regular expression variable called regex
                         collection.find(expression, function(err, cursor)
 													{
 														cursor.toArray(function(e, results) 
 														{ 
                                         
-															for(k = 0; k < 2 && k < results.length; k++) //choose one from the results
+															for(k = 0; k < 1 && k < results.length; k++) //choose one from the results
 															{
 																index = Math.floor(Math.random() * results.length);
 																nodes.push(results[index]); //push the result where it obtains all of the image node                                                  
@@ -232,11 +274,11 @@ app.get('/get_content', function(req, res, callback) {
 					    var indx = Math.floor(Math.random()*choices.length); //randomly select a level
                         var value = choices[indx];             
                 
-                      console.log("Same story" + " " + value);
+//                      console.log("Same story" + " " + value);
 		
                          var regex = ", " + value + ",|^" + value+ ",|^" + value+ "$|, " + value + "$"; //matching
 
-                        var expression = {'$and': [{'include': 'x'}, {'Story': new RegExp(regex)}]};
+                         var expression = {'$and': [{'include': 'x'}, {'Story': new RegExp(regex)},{'text': 0}]};
 						collection.find(expression, function(err, cursor)
 													{
 														cursor.toArray(function(e, results) 
@@ -251,6 +293,38 @@ app.get('/get_content', function(req, res, callback) {
 														})
 													});
 					},
+                     function(callback) {
+				    //select content from same story column 
+						choices = story.split(",");
+						for(j=0; j<choices.length; j++) 
+                        {
+							choices[j] = choices[j].trim();
+						}
+                
+                       
+					    var indx = Math.floor(Math.random()*choices.length); //randomly select a level
+                        var value = choices[indx];             
+                
+//                      console.log("Same story" + " " + value);
+		
+                         var regex = ", " + value + ",|^" + value+ ",|^" + value+ "$|, " + value + "$"; //matching
+
+                        var expression = {'$and': [{'include': 'x'}, {'Story': new RegExp(regex)},{'text': 1}]};
+						collection.find(expression, function(err, cursor)
+													{
+														cursor.toArray(function(e, results) 
+														{ 
+															for(k = 0; k < 1 && k < results.length; k++)
+															{
+																index = Math.floor(Math.random() * results.length);
+																nodes.push(results[index]);
+																results.splice(index, 1); //remove that one from consideration
+															}
+															callback();
+														})
+													});
+					},
+                    
                       function(callback) {
 				    //select content from same row on the story by using the last digit of #8
 						choices = level.split(",");
@@ -272,11 +346,11 @@ app.get('/get_content', function(req, res, callback) {
                       var value = story.toString();
                       value = value.replace(/,/g, '');
 
-                      console.log("Supporting context" + " " + value);
+//                      console.log("Supporting context" + " " + value);
 					  
                          var regex = ", " + value + ",|^" + value+ ",|^" + value+ "$|, " + value + "$"; //matching
 
-                        var expression = {'$and': [{'include': 'x'}, {'level': new RegExp(regex)}]};
+                        var expression = {'$and': [{'include': 'x'},{'level': new RegExp(regex)},{'text': 0}]};
 						collection.find(expression, function(err, cursor)
 													{
 														cursor.toArray(function(e, results) 
@@ -298,8 +372,27 @@ app.get('/get_content', function(req, res, callback) {
 	   }
     }
 });
-                              
+
+app.post('/post_user', function(req, res, data) 
+{
     
+    if(req.query.time - last_user_action_time > (3600) && req.query.start_bool == 'true')  
+   
+    {
+        console.log("new user");
+        user_id ++;
+    }
+
+	last_user_action_time = req.query.time;
+	req.query.userid = user_id;
+	userinfo_collection.insert(req.query, function(err, docs) {});
+     
+    var data = JSON.stringify('http://127.0.0.1:1337/content/home.html');
+    //res.header('Content-Length', data.length);
+    res.end(data);
+    
+});
+
 /* serves all the static files */
 app.get(/^(.+)$/, function(req, res)
 {

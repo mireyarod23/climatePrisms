@@ -41,10 +41,10 @@
 		  loadContent("&image=startup&x=0&y=0&time=" + new Date().getTime(), load[0], load[1]);
 	}
 
-	function loadUserInfo(event, img, content, action, argument, story, story_count) 
+	function loadUserInfo(event, img, content, action, argument, story, story_count, start_bool) 
 	{
         //user input is store, then send to the load content 
-		var userinfo = "&x=" + event.clientX + "&y=" + event.clientY + "&time=" + new Date().getTime() + "&image=" + img;
+		var userinfo = "&x=" + event.clientX + "&y=" + event.clientY + "&time=" + new Date().getTime() + "&image=" + img + "&start_bool=" + start_bool;
 		loadContent(userinfo, action, argument, story, story_count);
 	}
 
@@ -128,7 +128,7 @@ function finish_frame()
 		aaa = aaa.slice(1,aaa.length-1)
 		bbb = h1.split(',')[4].trim()
 		bbb = bbb.slice(1,bbb.length-1)
-		setTimeout(function(){ loadContent('&nothing', aaa, bbb); }, 1000);
+		setTimeout(function(){ loadContent('&nothing', aaa, bbb); }, 500);
 	}
 }
 
@@ -137,7 +137,7 @@ function post_layout(html)
 	$(front_buffer).find(".info_popup").css("visibility", "hidden");
 	$(back_buffer).html(html);
 
-	setTimeout(function() { finish_frame(); }, 1000);
+	setTimeout(function() { finish_frame(); }, 500);
 }
 
 function swap_buffers()
@@ -150,6 +150,30 @@ function swap_buffers()
 	back_buffer = t;
 
 }
+//
+function home_page(event) 
+{
+    var start_bool = "true";
+ 
+    var userinfo = "&x=" + event.clientX + "&y=" + event.clientY + "&time=" + new Date().getTime() + "&start_bool=" + start_bool;
+    
+    query_url = "http://127.0.0.1:1337/post_user?" + userinfo;
+    
+    $.ajax({
+            type: 'POST',
+			dataType: 'json',
+			url: query_url,
+			data: {},	
+            success: function(data) {
+                window.location = data;
+                    setTimeout(function() { post_layout(data); }, 500);
+                
+                }
+			});
+
+}
+
+
 
 // Settle the page, then get content
 $(document).ready(function() {
@@ -164,6 +188,7 @@ $(document).ready(function() {
 </script>
 <div id="container" style="background-color:darkgrey;z-index:0;width:100vw;height:100vh">
 	<button onclick="swap_buffers()" style="position:absolute;top:0px;left:0px;z-index:1;color:blue;background-color:#ffffee">Back</button>
+    <button onclick=home_page(event) style="position:absolute;top:0px;right:0px;z-index:1;color:blue;background-color:#ffffee">Home</button>
 	<div id="ping-container" style="height:100%;width:100%;visibility:visible"></div>
 	<div id="pong-container" style="height:100%;width:100%;visibility:hidden"></div>
 </div>
