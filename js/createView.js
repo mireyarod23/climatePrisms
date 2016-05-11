@@ -254,11 +254,11 @@ function createHTML(state)
 			{
                 info;
 				html +=   '<div id=' + infid + ' class=info_popup style="font-family:Sans-serif,Arial,Sans;visibility:hidden;top:0px;left:0px;width:100%;height:100%">';
-				html += 		'<div style="position:absolute;top:0%;left:0px;width:100%;height:100%;background-color:black;opacity:0.5;z-index:1001"></div>';
-				html += 		'<div style="position:absolute;border:10px solid grey;margin:10px;bottom:0px;right:20px;background-color:#F5EED7;opacity:0.8;z-index:1002;padding:14px">';
-				html +=        '<p>' + info + '</p>';
+				html += 		'<div style="position:absolute;top:0%;left:0px;width:100%;height:100%;background-color:black;opacity:0.3;z-index:1001"></div>';
+				html += 		'<div style="position:absolute;margin:10px;bottom:0px;right:20px;left:20px;background-color:#000000;opacity:0.8;z-index:1002;padding:14px">';
+				html +=        '<p style="color:white">' + info + '</p>';
 //				html +=       '<button style="visibility:inherit" onclick=' + "'popdown_info($(this))';>Close</button>";
-                html += 		'<div id=close style="visibility:inherit;position:absolute;margin:10px;bottom:0px;right:40px;width:100%;height:100%"background-color:#F5EED7;opacity:0.1;z-index:1002;padding:14px" onclick=' + "'popdown_info($(this))';" +'>';
+                html += 		'<div id=close style="visibility:inherit;position:absolute;margin:10px;bottom:0px;right:40px;width:100%;height:100%"background-color:#F5EED7;opacity:0.1;z-index:1002;padding:14px" onmouseout=' + "'popdown_info($(this), " + infid + ")'" +'>';
                 html += 	'</div>'
 				html += 		'</div>'
 				html += 	'</div>'

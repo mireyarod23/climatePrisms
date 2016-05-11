@@ -151,29 +151,83 @@ function swap_buffers()
 
 }
 //
-function home_page(event) 
-{
-    var start_bool = "true";
+//function home_page(event) 
+//{
+//    var start_bool = "true";
+// 
+//    var userinfo = "&x=" + event.clientX + "&y=" + event.clientY + "&time=" + new Date().getTime() + "&start_bool=" + start_bool;
+//    
+//    query_url = "http://127.0.0.1:1337/post_user?" + userinfo;
+//    
+//    $.ajax({
+//            type: 'POST',
+//			dataType: 'json',
+//			url: query_url,
+//			data: {},	
+//            success: function(data) {
+//                window.location = data;
+//                    setTimeout(function() { post_layout(data); }, 500);
+//                
+//                }
+//			});
+//
+//}
+//
+//var ___templatesLoadedCallback;
+//var templates = {homePage:"Content/home.html" };
+//
+//function loadTemplates(callback) {
+//    ___templatesLoadedCallback = callback;
+//    
+//    //load Mousetache HTML templates
+//    for (var key in templates) {
+//        (function() {
+//             var _key = key.toString();
+//             if ( _key != "loaded" && _key != "requested" ){
+//                 templates.requested ++;
+//                 
+//                 var templateLoaded = function( template ){
+//                    onTemplateLoaded( template, _key );
+//                 }
+//                 
+//                 $.get( templates[ _key ], templateLoaded, "html" );
+//        
+//             }
+//         })();
+//    }
+//}
+//
+//function onTemplateLoaded(template, key) {
+//    
+//    //alert( key + ": " + template);
+//    templates[ key ] = template;
+//    templates.loaded ++;
+//    
+//    if ( templates.loaded == templates.requested ) {
+//        ___templatesLoadedCallback();
+//    }
+//}
+//    
+//    
+//function ViewAssembler() {
+//    this.touchSupported = 'ontouchstart' in window;
+//    //this.CLICK_EVENT = this.touchSupported ? 'touchend' : 'click';
+//    this.CLICK_EVENT = 'click';
+//    return this;
+//}
+//    
+//ViewAssembler.prototype.defaultView = function() {
+//    var el = $( templates.defaultViewTemplate );
+//    el.find("#homeButton").attr( this.CLICK_EVENT, home_page);
+//    return el;
+//}
+//
+
+$("#homeButton").click(funtion(){ 
+    $("#container").load("content/home.html #container");   
+})
  
-    var userinfo = "&x=" + event.clientX + "&y=" + event.clientY + "&time=" + new Date().getTime() + "&start_bool=" + start_bool;
     
-    query_url = "http://127.0.0.1:1337/post_user?" + userinfo;
-    
-    $.ajax({
-            type: 'POST',
-			dataType: 'json',
-			url: query_url,
-			data: {},	
-            success: function(data) {
-                window.location = data;
-                    setTimeout(function() { post_layout(data); }, 500);
-                
-                }
-			});
-
-}
-
-
 
 // Settle the page, then get content
 $(document).ready(function() {
@@ -187,15 +241,19 @@ $(document).ready(function() {
 
 </script>
 <div id="container" style="background-color:darkgrey;z-index:0;width:100vw;height:100vh">
+<!--
 	<button onclick="swap_buffers()" style="position:absolute;top:0px;left:0px;z-index:1;color:blue;background-color:#ffffee">Back</button>
     <button onclick=home_page(event) style="position:absolute;top:0px;right:0px;z-index:1;color:blue;background-color:#ffffee">Home</button>
+-->
+    <img id="homeButton" src="images/icons/home.png" height="80" width="80" style="position:absolute;top:0px;right:0px;z-index:1;" />
+     <img id="backButton" src="images/icons/back.png" height="80" width="80" style="position:absolute;top:0px;left:0px;z-index:1;" onClick="swap_buffers()" />
 	<div id="ping-container" style="height:100%;width:100%;visibility:visible"></div>
 	<div id="pong-container" style="height:100%;width:100%;visibility:hidden"></div>
 </div>
 <div id="overlay" style="visibility:hidden">
 	<div id="video-contents" style="position:absolute;top:0px;left:0px;background-color:black;z-index:2;width:100vw;height:100vh;visibility:inherit"></div>
-	<div id="video-controls" style="position:absolute;top:0px;left:0px;z-index:3;width:100vw;height:100vh;visibility:hidden">
-		<div id="video-controls-up" style="position:absolute;top:0px;right:0%;width:40%;height:10%;background-color:transparent;z-index:4" onclick=state.animator.hide();></div>
+	<div id="video-controls" src="images/icons/exit.png" style="position:absolute;top:0px;left:0px;z-index:3;width:100vw;height:100vh;visibility:hidden">
+		<div id="video-controls-up"  style="position:absolute;top:0px;right:0%;width:40%;height:10%;background-color:transparent;z-index:4" onclick=state.animator.hide();></div>
 		<div id="video-controls-last" style="position:absolute;top:35%;left:0px;height:30%;width:10%;background-color:transparent;z-index:4" onclick=state.animator.last();></div>
 		<div id="video-controls-next" style="position:absolute;top:35%;left:90%;height:30%;width:10%;background-color:transparent;z-index:4" onclick=state.animator.next();></div>
 		<div id="video-controls-rerun" style="position:absolute;top:35%;left:35%;height:30%;width:30%;background-color:transparent;z-index:4" onclick=state.animator.rerun();></div>
