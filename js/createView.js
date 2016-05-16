@@ -156,6 +156,15 @@ function popdown_info(e, i)
 	e.parent().parent().css('visibility', 'hidden');
 }
 
+function shadowOverFillers(i, e) 
+{
+    i.parent().find('#' + e).css('visibility', 'visible');
+}
+
+function shadowOutFillers(i, e)
+{
+    i.parent().find('#' + e).css('visibility', 'hidden');
+} 
 //LAYOUT CREATION BY PASSING HTML to Post_layout
 function createHTML(state)
 {
@@ -204,9 +213,15 @@ function createHTML(state)
 			var ih = s * b.height;
 
 			html += '<div id=' + divid + ' style="overflow:hidden;position:absolute;left:' + x + 'px;top:' + y + 'px;width:' + rw + 'px;height:' + rh + 'px; background-color:' + colors[img_id] + '">';
-			html += '  <img style="width:' + iw + 'px;height:' + ih + 'px;" src="' + b.fname + '"/>'
+            html += '<div id="shadowOver" style="visibility:hidden;position:absolute;top:0%;left:0px;width:100%;height:100%;background-color:black;opacity:0.8;z-index:1001"></div>';
+			html += '  <img style="width:' + iw + 'px;height:' + ih + 'px;" src="' + b.fname + '" onmouseover=' + "'shadowOverFillers($(this), shadowOver)'"+ '/>';
+            html += 		'<div style="display: block;width: 0;height: 0; border-left: 40px solid #13273F; border-bottom: 40px solid transparent;position:absolute;left:40px;top:0;margin-left:-40px;"></div>';
+            html += 		'<div id="close" style="visibility:inherit;position:absolute;margin:10px;bottom:0px;right:40px;width:100%;height:100%"background-color:#F5EED7;opacity:0.1;z-index:1002;padding:14px" onmouseout=' + "'shadowOutFillers($(this), shadowOver)'" +'></div>';
 			html += '</div>';
-		}
+          
+   
+
+        }
 		else
 		{
 			var info = ""
@@ -255,9 +270,8 @@ function createHTML(state)
                 info;
 				html +=   '<div id=' + infid + ' class=info_popup style="font-family:Sans-serif,Arial,Sans;visibility:hidden;top:0px;left:0px;width:100%;height:100%">';
 				html += 		'<div style="position:absolute;top:0%;left:0px;width:100%;height:100%;background-color:black;opacity:0.3;z-index:1001"></div>';
-				html += 		'<div style="position:absolute;margin:10px;bottom:0px;right:20px;left:20px;background-color:#000000;opacity:0.8;z-index:1002;padding:14px">';
+				html += 		'<div style="position:absolute;margin:10px;bottom:0px;right:20px;left:20px;background-color:#3D7D9A;opacity:0.;z-index:1002;padding:14px">';
 				html +=        '<p style="color:white">' + info + '</p>';
-//				html +=       '<button style="visibility:inherit" onclick=' + "'popdown_info($(this))';>Close</button>";
                 html += 		'<div id=close style="visibility:inherit;position:absolute;margin:10px;bottom:0px;right:40px;width:100%;height:100%"background-color:#F5EED7;opacity:0.1;z-index:1002;padding:14px" onmouseout=' + "'popdown_info($(this), " + infid + ")'" +'>';
                 html += 	'</div>'
 				html += 		'</div>'
