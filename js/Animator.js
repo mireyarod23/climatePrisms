@@ -20,9 +20,9 @@ Animator.prototype.what_next = function()
 {
 	if (this.current_animation_frame == 0)
 		$('#video-controls-last').css('visibility', 'hidden')
-	else
+    else 
 		$('#video-controls-last').css('visibility', 'inherit')
-		
+    
 	if (this.current_animation_frame >= (this.animation_frames.length - 1))
 		$('#video-controls-next').css('visibility', 'hidden')
 	else

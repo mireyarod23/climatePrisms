@@ -67,6 +67,7 @@ function getProperties(nodes)
 				meta:						n.provenance,
 				image: 						n.filename,
                 context:                    n.context,
+                enlarge_image:              n.enlarge_image,
 				rollover_image:		        n.rollover,
 				content:					n.content,
 				area:						n.area,
@@ -149,6 +150,7 @@ function createTiles(candidate_images)
 function popup_info(e, i)
 {
 	e.parent().find("#" + i).css('visibility', 'visible');
+    
 }
 
 function popdown_info(e, i)
@@ -156,15 +158,22 @@ function popdown_info(e, i)
 	e.parent().parent().css('visibility', 'hidden');
 }
 
-function shadowOverFillers(i, e) 
+function popup_image(a, e)
 {
-    i.parent().find('#' + e).css('visibility', 'visible');
+//    a.parent().find("#" + e, parent.document);
+    a.parent().find("#" + e).css('visibility', 'visible');
+
+
+
 }
 
-function shadowOutFillers(i, e)
+function popout_image(a, e)
 {
-    i.parent().find('#' + e).css('visibility', 'hidden');
-} 
+    console.log("Close");
+
+    $('#' + e).css('visibility', 'hidden');
+
+}
 //LAYOUT CREATION BY PASSING HTML to Post_layout
 function createHTML(state)
 {
@@ -173,7 +182,7 @@ function createHTML(state)
 
 	// Colors for "images" without content - e.g. empty rects
 
-	var colors = ['grey'];
+	var colors = ['darkgrey'];
 
 
     current_story_count = current_story_count + 1;
@@ -189,6 +198,7 @@ function createHTML(state)
 		var capid = '"cap_' + img_id + '"';
 		var imgid = '"img_' + img_id + '"';
 		var infid = '"inf_' + img_id + '"';
+
 
 		var x    = image.x;
 		var y    = image.y;
@@ -212,17 +222,15 @@ function createHTML(state)
 			var iw = s * b.width;
 			var ih = s * b.height;
 
-			html += '<div id=' + divid + ' style="overflow:hidden;position:absolute;left:' + x + 'px;top:' + y + 'px;width:' + rw + 'px;height:' + rh + 'px; background-color:' + colors[img_id] + '">';
-            html += '<div id="shadowOver" style="visibility:hidden;position:absolute;top:0%;left:0px;width:100%;height:100%;background-color:black;opacity:0.8;z-index:1001"></div>';
-			html += '  <img style="width:' + iw + 'px;height:' + ih + 'px;" src="' + b.fname + '" onmouseover=' + "'shadowOverFillers($(this), shadowOver)'"+ '/>';
-            html += 		'<div style="display: block;width: 0;height: 0; border-left: 40px solid #13273F; border-bottom: 40px solid transparent;position:absolute;left:40px;top:0;margin-left:-40px;"></div>';
-            html += 		'<div id="close" style="visibility:inherit;position:absolute;margin:10px;bottom:0px;right:40px;width:100%;height:100%"background-color:#F5EED7;opacity:0.1;z-index:1002;padding:14px" onmouseout=' + "'shadowOutFillers($(this), shadowOver)'" +'></div>';
+
+	
+    	   html += '<div id=' + divid + ' style="overflow:hidden;position:absolute;left:' + x + 'px;top:' + y + 'px;width:' + rw + 'px;height:' + rh + 'px; background-color:black">';
+			html += '  <img style="width:' + iw + 'px;height:' + ih + 'px;" src="' + b.fname + '" class=shadowOver onmouseout=this.style.opacity=1; onmouseover=this.style.opacity=0.8; "/>';
 			html += '</div>';
-          
-   
+		
 
         }
-		else
+		else if(!image.empty)
 		{
 			var info = ""
 			if (image.name.length == 0 && image.meta.length > 0)
@@ -233,57 +241,52 @@ function createHTML(state)
 				info = image.name
 				//info = image.meta + ', ' + image.name
 			
-      html += '<div id=' + divid + ' style="position:absolute;left:' + x + 'px;top:' + y + 'px;width:' + rw + 'px;height:' + rh + 'px)">';
-      html += 	'<img id=' + imgid + ' style="width:' + rw + 'px;height:' + rh + 'px" src="images/' + image.folder + "/" + image.image + '", ' + embedAction(image) + ' />';
+            var textOnImage = "";
+            if(image.enlarge_image == 0)
+                textOnImage = image.enlarge_image
+            else if(image.enlarge_image == 1)
+                textOnImage = image.enlarge_image
+  
+                
+              html += '<div id=' + divid + ' style="position:absolute;left:' + x + 'px;top:' + y + 'px;width:' + rw + 'px;height:' + rh + 'px)">';
+              html += 	'<img id=' + imgid + ' style="width:' + rw + 'px;height:' + rh + 'px" src="images/' + image.folder + "/" + image.image + '", ' + embedAction(image) + ' />';
+  
 
-            // matching key words adding href link for destination. 
-            // if could add multiple database to access then create database that has all the possible key words with its corresponding level. 
-            // corrisponding level will the execute inside bradbury html with proper link, which then access the express_server
-                       
-//            keywords.forEach(function(inf) {
-//                info = info.split(RegExp("\\b" + inf + "\\b", "i")). join("<a href=#>" +inf + "</a>"); 
-//               });
-//            var words  = [];
-//            var k = state.keywords;
-//
-//            for (var i= 0; i < k.length; i++) 
-//            {
-//                var key = k[i];
-//                words.push(key.keyword);
-//               
-//            
-//            var userInput = "&image=" + "&time=" + new Date().getTime() + "&image=" + k[i];
-////                text = text.replace(new RegExp(i, gi), function(word) {
-//           //     info = info.split(RegExp("\\b" + k[i] + "\\b", "i")). join("<a href=http://127.0.0.1:1337/get_content?field=layout" + userInput + "&value=" + k[i] + ">" + k[i] + "</a>"); 
-////               });
-//            
-//           // }
-//           
-//                words.forEach(function(inf) {
-//                console.log(key.filename);
-//                info = info.split(RegExp("\\b" + inf + "\\b", "i")). join("<a href=# onclick=return  >" + inf + "</a>"); 
-//               });
-//            }
         
 			if (info != "")
 			{
                 info;
 				html +=   '<div id=' + infid + ' class=info_popup style="font-family:Sans-serif,Arial,Sans;visibility:hidden;top:0px;left:0px;width:100%;height:100%">';
 				html += 		'<div style="position:absolute;top:0%;left:0px;width:100%;height:100%;background-color:black;opacity:0.3;z-index:1001"></div>';
-				html += 		'<div style="position:absolute;margin:10px;bottom:0px;right:20px;left:20px;background-color:#3D7D9A;opacity:0.;z-index:1002;padding:14px">';
+				html += 		'<div style="position:absolute;margin:10px;bottom:0px;right:20px;left:20px;background-color:#3D7D9A;opacity:0.9;z-index:1002;padding:14px">';
 				html +=        '<p style="color:white">' + info + '</p>';
                 html += 		'<div id=close style="visibility:inherit;position:absolute;margin:10px;bottom:0px;right:40px;width:100%;height:100%"background-color:#F5EED7;opacity:0.1;z-index:1002;padding:14px" onmouseout=' + "'popdown_info($(this), " + infid + ")'" +'>';
-                html += 	'</div>'
-				html += 		'</div>'
-				html += 	'</div>'
+                html += 	'</div>';
+				html += 		'</div>';
+				html += 	'</div>';
 				html +=    '<img style="position:absolute;left:' + (rw-50) + 'px;top:' + (rh-50) + 'px;width:50px;height:50px" onmouseover=' + "'popup_info($(this), " + infid + ")'" + ' src="images/icons/icon.png">';
 
 			}
+            // for enlarging images beyond its div container. Images have been assign a 1 or 0 with text that need to be enlarged for reading purposes.
+            if(textOnImage != 0) 
+            {
+
+                html += '<div id=' + capid + ' class=image_popup style="visibility:hidden;top:0px;left:0px;width:100%;height:100%">';
+                html += 	'<img style="position:fixed;top:20%;left:15%;max-width:70%;max-height:70%;z-index:1002" src="images/' + image.folder + "/" + image.image + '">';
+                html += 	   '<img style="visibility:inherit;position:fixed;top:21%;left:15%;width:50px;height:50px;z-index:1003" onclick=' + "'popout_image($(this), " + capid + ");'" + 'src="images/icons/exit.png" >';
+//                html += 		'<div style="position:fixed;top:0%;left:0px;width:100%;height:100%;background-color:black;opacity:0.5;z-index:1">';
+                html += 		'<div style="position:fixed;top:0%;left:0px;width:100%;height:100%;background-color:black;opacity:0.5;z-index:1">';
+                html +=      '</div>';
+                html +=   '</div>';
+                html +=   '<img style="position:absolute;left:' + (rw-50) + 'px;top:' + (rh-50) + 'px;width:40px;height:40px" onclick=' + "'popup_image($(this)," + capid + ");'" + 'src="images/icons/enlarge.png">';
+                html +=   '</div>';
+            }
             
            
-           
+             html += '</div>';  
       html += '</div>';
-		}
+		
+        }
                             
 		img_id ++;
 	}
