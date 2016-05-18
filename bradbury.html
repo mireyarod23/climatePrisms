@@ -83,8 +83,10 @@ var kk = 99999999;
 			}
 		});
 	}
-    
-function loadSingleImage(img)
+
+
+	function loadSingleImage(img)
+
 	{
 		$.ajax({
 			dataType: 'json',
@@ -95,6 +97,9 @@ function loadSingleImage(img)
 			}
 		});
 	}
+
+
+
 function toggle_form() {
 	if(get('node_form').style.visibility == 'hidden') {
 		get('node_form').style.visibility = 'visible';
@@ -120,6 +125,9 @@ function hidetext()
 <script>
 
 var container;
+
+var state;
+
 var front_buffer, back_buffer, home_page;
 
 function finish_frame()
@@ -148,8 +156,7 @@ function finish_frame()
 function post_layout(html)
 {
 	$(front_buffer).find(".info_popup").css("visibility", "hidden");
-	$(back_buffer).html(html);
-
+	$(back_buffer).html(html); 
 	setTimeout(function() { finish_frame(); }, 500);
 }
 
@@ -163,6 +170,13 @@ function swap_buffers()
 	front_buffer = back_buffer;
 	back_buffer = t;
 
+}
+
+function go_home()
+{
+	$(back_buffer).css('visibility', 'hidden');
+	$(front_buffer).css('visibility', 'hidden');
+	$(home_buffer).css('visibility', 'visible');
 }
 
 function home_page(event) 
@@ -203,18 +217,16 @@ $(document).ready(function() {
 	front_buffer = document.getElementById('ping-container');
 	back_buffer = document.getElementById('pong-container');
 	home_buffer = document.getElementById('home-container');
+
 });
 
 </script>
 <div id="container" style="background-color:darkgrey;z-index:0;width:100vw;height:100vh">
-<!--
-	<button onclick="swap_buffers()" style="position:absolute;top:0px;left:0px;z-index:1;color:blue;background-color:#ffffee">Back</button>
-    <button onclick=home_page(event) style="position:absolute;top:0px;right:0px;z-index:1;color:blue;background-color:#ffffee">Home</button>
--->
-    <img id="homeButton" src="images/icons/homeBlue.png" height="80" width="80" style="position:absolute;top:0px;right:0px;z-index:1;" onClick="home_page(event)"/>
-     <img id="backButton" src="images/icons/arrowBack.png" height="80" width="80" style="position:absolute;top:0px;left:0px;z-index:1;" onClick="swap_buffers()" />
-<!--    <div id= "enlargeImage_container" style="position:absolute;margin:10px;bottom:0px;right:40px;width:100%;height:100%"></div>-->
-    <div id="home-container" style="height:100%;width:100%;visibility:visible">
+
+    <img id="homeButton" src="images/icons/home.png" height="80" width="80" style="position:absolute;top:0px;right:0px;z-index:1;" onClick="go_home()"/>
+    <img id="backButton" src="images/icons/back.png" height="80" width="80" style="position:absolute;top:0px;left:0px;z-index:1;" onClick="swap_buffers()" />
+	<div id="home-container" style="height:100%;width:100%;visibility:visible">
+
 		<img style="position:absolute;top:0px;left:0px;width:18%;height:40%" src="images/DATABASE/HOME_CONTENT/erosion_h.png" onclick="loadSingleImage('erosion2.png')"/>           
 		<img style="position:absolute;top:40%;left:0px;width:18%;height:45%" src="images/DATABASE/HOME_CONTENT/iw_polygon_h.png" onclick="loadSingleImage('IWP_D_1.png')"/>           
 		<img style="position:absolute;top:85%;left:0px;width:31%;height:15%" src="images/DATABASE/HOME_CONTENT/geomorphology_h.png"  onclick="loadSingleImage('GEO.KEY.ACL.0005.png.png')">           
@@ -226,7 +238,10 @@ $(document).ready(function() {
 		<img style="position:absolute;top:0px;left:84%;width:16%;height:76%" src="images/DATABASE/HOME_CONTENT/thermokarst_h.png" onclick="loadSingleImage('Thermok_D_1.png')"/>           
 		<img style="position:absolute;top:76%;left:84%;width:16%;height:24%" src="images/DATABASE/HOME_CONTENT/albedo_h.png" onclick="loadSingleImage('Albedo_Def1.png')"/>           
 	</div>
-	<div id="ping-container" style="height:100%;width:100%;visibility:visible"></div>
+
+
+	<div id="ping-container" style="height:100%;width:100%;visibility:hidden"></div>
+
 	<div id="pong-container" style="height:100%;width:100%;visibility:hidden"></div>
 </div>
 <div id="overlay" style="visibility:hidden">

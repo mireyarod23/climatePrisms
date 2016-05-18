@@ -2,7 +2,9 @@ var express = require('express');
 var app     = express();
 
 // var root_directory = "/Users/mireyarodriguez/bradbury08_10";
-var root_directory = "/Bradbury04_04/climatePrisms";
+// var root_directory = "/Bradbury04_04/climatePrisms";
+//var root_directory = "/Users/gda/git/ClimatePrisms";
+
 
 var MongoClient = require('mongodb').MongoClient, 
     format = require('util').format,
@@ -56,8 +58,8 @@ MongoClient.connect(format("mongodb://%s:%s/bradbury?w=1", host, port), function
 function return_json(r, j)
 {
     
-	for (var i = 0; i < j.length; i++)
-		console.log('>> ' + j[i]['filename'],j[i]['level']);
+	// for (var i = 0; i < j.length; i++)
+		// console.log('>> ' + j[i]['filename'],j[i]['level']);
 
 	r.json(j);
 }
@@ -387,9 +389,9 @@ app.post('/post_user', function(req, res, data)
 	req.query.userid = user_id;
 	userinfo_collection.insert(req.query, function(err, docs) {});
      
-    var data = JSON.stringify('http://127.0.0.1:1337/content/home.html');
-    //res.header('Content-Length', data.length);
-    res.end(data);
+//    var data = JSON.stringify('http://127.0.0.1:1337/content/home.html');
+//    //res.header('Content-Length', data.length);
+//    res.end(data);
     
 });
 
