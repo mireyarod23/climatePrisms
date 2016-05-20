@@ -149,30 +149,30 @@ function createTiles(candidate_images)
 
 function popup_info(e, i)
 {
+    
 	e.parent().find("#" + i).css('visibility', 'visible');
     
 }
 
 function popdown_info(e, i)
 {
+    
 	e.parent().parent().css('visibility', 'hidden');
+    
 }
 
 function popup_image(a, e)
 {
-//    a.parent().find("#" + e, parent.document);
+    
     a.parent().find("#" + e).css('visibility', 'visible');
-
-
-
+    
 }
 
 function popout_image(a, e)
 {
-    console.log("Close");
-
+    
     $('#' + e).css('visibility', 'hidden');
-
+    
 }
 //LAYOUT CREATION BY PASSING HTML to Post_layout
 function createHTML(state)
@@ -256,11 +256,11 @@ function createHTML(state)
 			if (info != "")
 			{
                 info;
-				html +=   '<div id=' + infid + ' class=info_popup style="font-family:Sans-serif,Arial,Sans;visibility:hidden;top:0px;left:0px;width:100%;height:100%">';
+				html +=   '<div id=' + infid + ' class=info_popup style="font-family:Sans-serif,Arial,Sans;font-size:large;visibility:hidden;top:0px;left:0px;width:100%;height:100%">';
 				html += 		'<div style="position:absolute;top:0%;left:0px;width:100%;height:100%;background-color:black;opacity:0.3;z-index:1001"></div>';
-				html += 		'<div style="position:absolute;margin:10px;bottom:0px;right:20px;left:20px;background-color:#3D7D9A;opacity:0.9;z-index:1002;padding:14px">';
+				html += 		'<div style="position:absolute;margin:10px;bottom:0px;right:20px;left:20px;background-color:#A19E6C;opacity:0.9;z-index:1002;padding:14px">';
 				html +=        '<p style="color:white">' + info + '</p>';
-                html += 		'<div id=close style="visibility:inherit;position:absolute;margin:10px;bottom:0px;right:40px;width:100%;height:100%"background-color:#F5EED7;opacity:0.1;z-index:1002;padding:14px" onmouseout=' + "'popdown_info($(this), " + infid + ")'" +'>';
+                html +=        '<div id=close style="visibility:inherit;position:absolute;margin:10px;bottom:0px;right:40px;width:100%;height:100%"background-color:#F5EED7;opacity:0.1;z-index:1002;padding:14px" onmouseout=' + "'popdown_info($(this), " + infid + ")'" +'>';
                 html += 	'</div>';
 				html += 		'</div>';
 				html += 	'</div>';
@@ -271,14 +271,12 @@ function createHTML(state)
             if(textOnImage != 0) 
             {
 
-                html += '<div id=' + capid + ' class=image_popup style="visibility:hidden;top:0px;left:0px;width:100%;height:100%">';
-                html += 	'<img style="position:fixed;top:20%;left:15%;max-width:70%;max-height:70%;z-index:1002" src="images/' + image.folder + "/" + image.image + '">';
-                html += 	   '<img style="visibility:inherit;position:fixed;top:21%;left:15%;width:50px;height:50px;z-index:1003" onclick=' + "'popout_image($(this), " + capid + ");'" + 'src="images/icons/exit.png" >';
-//                html += 		'<div style="position:fixed;top:0%;left:0px;width:100%;height:100%;background-color:black;opacity:0.5;z-index:1">';
-                html += 		'<div style="position:fixed;top:0%;left:0px;width:100%;height:100%;background-color:black;opacity:0.5;z-index:1">';
+                html += '<div id=' + capid + ' class=image_popup style="visibility:hidden;top:0px;left:0px;width:100%;height:100%;margin:auto;">';
+                html += 	'<img style="position:fixed;top:50%;left:50%;margin-right:50%;transform:translate(-50%, -50%);max-width:80%;max-height:80%;z-index:1002" onclick=' + "'popout_image($(this), " + capid + ");'" + 'src="images/' + image.folder + "/" + image.image + '">';
+                html += 		'<div style="position:fixed;top:0px;left:0px;width:100%;height:100%;background-color:black;opacity:0.5;z-index:1">';
                 html +=      '</div>';
                 html +=   '</div>';
-                html +=   '<img style="position:absolute;left:' + (rw-50) + 'px;top:' + (rh-50) + 'px;width:40px;height:40px" onclick=' + "'popup_image($(this)," + capid + ");'" + 'src="images/icons/enlarge.png">';
+                html +=   '<img style="position:absolute;right:' + (rw-45) + 'px;top:' + (rh-45) + 'px;width:35px;height:35px" onclick=' + "'popup_image($(this)," + capid + ");'" + 'src="images/icons/enlarge.png">';
                 html +=   '</div>';
             }
             
@@ -293,9 +291,6 @@ function createHTML(state)
 
 	return html;
 }
-
-
-
 
 function embedAction(image)
 {
@@ -339,8 +334,5 @@ function embedAction(image)
     return 'onclick="loadUserInfo(event, this.innerHTML, ' + "'" + choice +  
                                                              "', '" + typ + "', '" + value + 
                                                              "', '" + image.Story + "', '" +  current_story_count + "','" +  start_bool + "')" + '"';
-
-                                                       
-
 
 }

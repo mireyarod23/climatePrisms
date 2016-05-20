@@ -2,7 +2,7 @@ var express = require('express');
 var app     = express();
 
 // var root_directory = "/Users/mireyarodriguez/bradbury08_10";
-// var root_directory = "/Bradbury04_04/climatePrisms";
+ var root_directory = "/Bradbury04_04/climatePrisms";
 //var root_directory = "/Users/gda/git/ClimatePrisms";
 
 
