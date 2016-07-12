@@ -1,11 +1,13 @@
 var Animator = function()
 {
+
 	this.current_animation_frame = -1;
 	this.animation_frames = [];
 }
 
 Animator.prototype.hide = function()
 {
+     $.idleTimer('reset');
 	$('#video-contents').html('')
   $('#video-controls').css('visibility', 'hidden')
 	$('#overlay').css('visibility', 'hidden')
@@ -59,9 +61,10 @@ Animator.prototype.rerun = function()
 
 Animator.prototype.run = function(str)
 {
+    $.idleTimer('pause');
 	this.current_animation_frame = 0;
 	this.animation_frames = str.split(':')
-	$('#video-controls').css('visibility', 'hidden')
+	$('#video-controls').css('visibility', 'visible')
 	$('#overlay').css('visibility', 'visible')
 	this.set_animation_html();
 }

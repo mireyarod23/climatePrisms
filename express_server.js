@@ -1,8 +1,8 @@
 var express = require('express');
 var app     = express();
 
-// var root_directory = "/Users/mireyarodriguez/bradbury08_10";
- var root_directory = "/Bradbury04_04/climatePrisms";
+var root_directory = "/Bradbury06_30/climatePrisms";
+// var root_directory = "/Users/mireyarodriguez/Bradbury06_30/climatePrisms";
 //var root_directory = "/Users/gda/git/ClimatePrisms";
 
 
@@ -58,8 +58,8 @@ MongoClient.connect(format("mongodb://%s:%s/bradbury?w=1", host, port), function
 function return_json(r, j)
 {
     
-	// for (var i = 0; i < j.length; i++)
-		// console.log('>> ' + j[i]['filename'],j[i]['level']);
+	 for (var i = 0; i < j.length; i++)
+		 console.log('>> ' + j[i]['filename'],j[i]['level']);
 
 	r.json(j);
 }
@@ -78,15 +78,15 @@ app.get('/get_keywords', function(req, res, callback) {
 
 
 app.get('/get_content', function(req, res, callback) {
-//	console.log('get_content: ' + req.query.field + ' ' + req.query.value);
-//	console.log('saved level' + ' ' + levelForContext);
+	console.log('get_content: ' + req.query.field + ' ' + req.query.value);
+	console.log('saved level' + ' ' + levelForContext);
 	
-//    if(req.query.time - last_user_action_time > (6000)) { //3 minutes (1000 miliseconds * 60 seconds * 3 minutes mil
-//		user_id++;
-//	}
-//    
-//	last_user_action_time = req.query.time;
-//	req.query.userid = user_id;
+    if(req.query.time - last_user_action_time > (3600)) { //3 minutes (1000 miliseconds * 60 seconds * 3 minutes mil
+		user_id++;
+	}
+    
+	last_user_action_time = req.query.time;
+	req.query.userid = user_id;
 	userinfo_collection.insert(req.query, function(err, docs) {});
     
 	nodes = [];                          
@@ -104,12 +104,13 @@ app.get('/get_content', function(req, res, callback) {
     }
     else if(req.query.field=='rules')
 	{
-            
+          
 		var rule = req.query.value.split(',')[0];
         var story_iteration = req.query.value.split(',')[1];
         var iteration = req.query.value.split(',')[2];
         
-        console.log("RULE " + req.query.value + "    " + rule)
+        console.log("name of file:" + rule);
+        
 		var found_rule = false;
 		var story_type = "";
 		var content_type = "";
@@ -119,40 +120,36 @@ app.get('/get_content', function(req, res, callback) {
 		var dice_roll = Math.floor(Math.random()*2+1);
 		var dice_roll2 = Math.floor(Math.random()*2+1);
         
-        if (iteration < 3)
+        if(iteration == 0)
         {
-            console.log("Iteration" + story_iteration);
-            console.log("ITERATION rules " + iteration);
-            
+            console.log("ITERATION rules when " + iteration);
             nodes = []
             
-           
-//            var find_story_content = function(s, callback)
-//            {
-//                var expression = {'$and': [{'include': 'x'},{'Story': s},{'layout': 0}]};
-//                var cursor = collection.find(expression);
-//                cursor.each(function(err, item) {
-//                    if (item != null) {
-//                        nodes.push(item);  
-//                    }
-//                    else
-//                    {
-//                        nodes = nodes.sort(function() { return 0.5 - Math.random(); }).slice(0, 6);
-//                        callback();
-//                    }});                      
-//            }
-//            
-//            find_story_content(story_iteration, function() {return_json(res, nodes); });
-             async.parallel([
+            async.parallel([
+                
               function(callback) {
-				  
-
-                         var expression = {'$and': [{'include': 'x'}, {'Story': story_iteration},{'text': 0},{'layout': 0}]};
+				    var expression = {'$and': [{'include': 'x'}, {'Story': story_iteration},{'text': 0},{'layout': 0}]};
+				    collection.find(expression, function(err, cursor)
+                                    {
+								        cursor.toArray(function(e, results) 
+								        { 
+								            for(k = 0; k < 3 && k < results.length; k++)
+												{
+												    index = Math.floor(Math.random() * results.length);
+								                    nodes.push(results[index]);
+												    results.splice(index, 1); //remove that one from consideration
+												}
+															callback();
+								    })
+				        });
+					},
+                 function(callback) {
+				        var expression = {'$and': [{'include': 'x'}, {'Story': story_iteration},{'text': 0},{'layout': 0}]};
 						collection.find(expression, function(err, cursor)
-													{
-														cursor.toArray(function(e, results) 
+								{
+								    cursor.toArray(function(e, results) 
 														{ 
-															for(k = 0; k < 3 && k < results.length; k++)
+															for(k = 0; k < 1 && k < results.length; k++)
 															{
 																index = Math.floor(Math.random() * results.length);
 																nodes.push(results[index]);
@@ -170,7 +167,81 @@ app.get('/get_content', function(req, res, callback) {
 													{
 														cursor.toArray(function(e, results) 
 														{ 
-															for(k = 0; k < 2 && k < results.length; k++)
+															for(k = 0; k < 1 && k < results.length; k++)
+															{
+																index = Math.floor(Math.random() * results.length);
+																nodes.push(results[index]);
+																results.splice(index, 1); //remove that one from consideration
+															}
+															callback();
+														})
+													});
+					},
+                 ], function(err, results) { return_json(res, nodes); });
+                 
+            }
+        
+        else if (iteration < 3 && iteration != 0)
+        {
+            console.log("Iteration" + story_iteration);
+            console.log("ITERATION rules " + iteration);
+                
+            nodes = []
+              
+             async.parallel([
+                //accessing user_collection to access the previous clicked image     
+                function(callback) 
+                    {
+                        result_array =[]
+                        collection.findOne({'filename': rule}, function(err, item)
+                        {
+                         nodes.push(item);   
+                           
+                        });
+                         callback();
+                    },
+                                 
+                function(callback) {
+				    var expression = {'$and': [{'include': 'x'}, {'Story': story_iteration},{'text': 0},{'layout': 0}]};
+				    collection.find(expression, function(err, cursor)
+                                    {
+								        cursor.toArray(function(e, results) 
+								        { 
+								            for(k = 0; k < 3 && k < results.length; k++)
+												{
+												    index = Math.floor(Math.random() * results.length);
+								                    nodes.push(results[index]);
+												    results.splice(index, 1); //remove that one from consideration
+												}
+															callback();
+								    })
+				        });
+					},
+                 function(callback) {
+				        var expression = {'$and': [{'include': 'x'}, {'Story': story_iteration},{'text': 0},{'layout': 0}]};
+						collection.find(expression, function(err, cursor)
+								{
+								    cursor.toArray(function(e, results) 
+														{ 
+															for(k = 0; k < 1 && k < results.length; k++)
+															{
+																index = Math.floor(Math.random() * results.length);
+																nodes.push(results[index]);
+																results.splice(index, 1); //remove that one from consideration
+															}
+															callback();
+														})
+													});
+					},
+                     function(callback) {
+				    //select content from same story column 
+
+                        var expression = {'$and': [{'include': 'x'}, {'Story': story_iteration},{'text': 1}, {'layout': 0}]};
+						collection.find(expression, function(err, cursor)
+													{
+														cursor.toArray(function(e, results) 
+														{ 
+															for(k = 0; k < 1 && k < results.length; k++)
 															{
 																index = Math.floor(Math.random() * results.length);
 																nodes.push(results[index]);
@@ -185,6 +256,7 @@ app.get('/get_content', function(req, res, callback) {
         }
         else
         {
+             console.log("iteration greater than 3");
             console.log("NON_ITERATION rules");
 		  collection.find({'filename': new RegExp(rule)}).each(function(err, node) {
         
@@ -195,13 +267,26 @@ app.get('/get_content', function(req, res, callback) {
                 level = "" + node.level;
                 context = "" + node.context;
                 story = "" + node.Story;
+                filename = "" + node.filename;
+            
                 
-    
                 var nodes = [];
             
                 
                 async.parallel([
                
+                function(callback) 
+                    {
+  
+                        result_array =[]
+                        collection.findOne({'filename': filename}, function(err, item)
+                        {
+                         nodes.push(item);   
+                           
+                        });
+                         callback();
+                    },
+                     
                 function(callback) {
                     //Obtain an image from levels 
                         
@@ -228,10 +313,7 @@ app.get('/get_content', function(req, res, callback) {
                             } else {
                                 value = "000";
                         }
-                    
-                        
-//                        console.log("Level choosen from image" + " " + value[0] + " , " + value[1]);
-                        
+                                        
                         //regualar expression of "or" to match the stories that might 
                         //not have content this matches the next interations
 
@@ -264,7 +346,7 @@ app.get('/get_content', function(req, res, callback) {
 														})
 												    });
                             },
-                  function(callback) {
+                    function(callback) {
 				    //select content from same story column 
 						choices = story.split(",");
 						for(j=0; j<choices.length; j++) 
@@ -389,9 +471,6 @@ app.post('/post_user', function(req, res, data)
 	req.query.userid = user_id;
 	userinfo_collection.insert(req.query, function(err, docs) {});
      
-//    var data = JSON.stringify('http://127.0.0.1:1337/content/home.html');
-//    //res.header('Content-Length', data.length);
-//    res.end(data);
     
 });
 
